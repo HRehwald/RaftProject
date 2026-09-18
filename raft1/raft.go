@@ -31,7 +31,11 @@ type Raft struct {
 	// Your data here (3A, 3B, 3C).
 	// Look at the paper's Figure 2 for a description of what
 	// state a Raft server must maintain.
-
+	var currentTerm int
+	var votedFor int
+	var logEntries []LogEntry
+	var state int
+	var electionTimer *time.Timer
 }
 
 // return currentTerm and whether this server
@@ -41,6 +45,8 @@ func (rf *Raft) GetState() (int, bool) {
 	var term int
 	var isleader bool
 	// Your code here (3A).
+	term = rf.currentTerm
+	isleader = (rf.state == 2)
 	return term, isleader
 }
 
@@ -178,6 +184,9 @@ func (rf *Raft) ticker() {
 
 		// Your code here (3A)
 		// Check if a leader election should be started.
+		if rf.killed() {
+			return
+		}
 
 
 		// pause for a random amount of time between 50 and 350
